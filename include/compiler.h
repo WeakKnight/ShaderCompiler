@@ -23,15 +23,36 @@ namespace shc
 			RWBuffer,
 			RWByteAddressBuffer,
 			RWStructuredBuffer,
+			SamplerState,
 			RaytracingAccelerationStructure,
 			TextureHeap,
 			BufferHeap,
+			Unknown
+		};
+
+		enum class Usage
+		{
+			ConstantBuffer,
+			ShaderResource,
+			UnorderedAccess,
+			SamplerState,
+			Unknown
 		};
 
 		std::string name;
 		Type type;
+		Usage usage;
+
 		unsigned int index;
 		unsigned int space;
+		unsigned int count;
+	};
+
+	struct DefineList
+	{
+		void AddDefine(const std::string& name, const std::string& value = "");
+		void RemoveDefine(const std::string& name);
+		std::unordered_map<std::string, std::string> defines;
 	};
 
 	class Compiler
@@ -43,18 +64,19 @@ namespace shc
 		public:
 			Result(SlangCompileRequest* request);
 			~Result();
-			friend Compiler;
+			std::unordered_map<std::string, Variable> variables;
 		private:
-			std::unordered_map<std::string, Variable> mpVariables;
 			SlangCompileRequest* mpRequest;
 		};
 
 		Compiler();
 		~Compiler();
 		
-		std::shared_ptr<Result> Compile(const char* path, const char* entry, const char* profile);
+		void AddSearchPath(const std::string& path);
+		std::shared_ptr<Result> Compile(const char* path, const char* entry, const char* profile, DefineList& defineList = DefineList());
 
 	private:
+		std::vector<std::string> mSearchPaths;
 		SlangSession* mpSession;
 	};
 }
