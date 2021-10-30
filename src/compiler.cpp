@@ -54,8 +54,7 @@ std::shared_ptr<Compiler::Result> Compiler::Compile(const char* path, const char
     }
     else
     {
-        size_t dataSize = 0;
-        void const* data = spGetEntryPointCode(request, entryPointIndex, &dataSize);
+        result->data = spGetEntryPointCode(request, entryPointIndex, &result->size);
 
         slang::ShaderReflection* shaderReflection = slang::ShaderReflection::get(request);
         unsigned parameterCount = shaderReflection->getParameterCount();
@@ -83,6 +82,24 @@ std::shared_ptr<Compiler::Result> Compiler::Compile(const char* path, const char
             variable.type = ConvertTypeNameToVariableType(typeName);
            
             result->variables[variable.name] = variable;
+        }
+
+
+        SlangUInt entryPointCount = shaderReflection->getEntryPointCount();
+        for (SlangUInt ee = 0; ee < entryPointCount; ee++)
+        {
+            slang::EntryPointReflection* entryPoint =
+                shaderReflection->getEntryPointByIndex(ee);
+            std::string entryPointName = entryPoint->getName();
+            if (entryPointName == entry && entryPoint->getStage() == SLANG_STAGE_COMPUTE)
+            {
+                SlangUInt threadGroupSize[3];
+                entryPoint->getComputeThreadGroupSize(3, &threadGroupSize[0]);
+
+                result->threadGroupSize[0] = threadGroupSize[0];
+                result->threadGroupSize[1] = threadGroupSize[1];
+                result->threadGroupSize[2] = threadGroupSize[2];
+            }
         }
     }
 

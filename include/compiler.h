@@ -65,6 +65,10 @@ namespace shc
 			Result(SlangCompileRequest* request);
 			~Result();
 			std::unordered_map<std::string, Variable> variables;
+			const void* data = nullptr;
+			size_t size = 0;
+			unsigned int threadGroupSize[3] = {0, 0, 0};
+
 		private:
 			SlangCompileRequest* mpRequest;
 		};

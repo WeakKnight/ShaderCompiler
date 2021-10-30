@@ -14,6 +14,5 @@ int main(int argc, char** argv)
     defines.AddDefine("_RAY_TRACING", "");
 
     auto result = compiler.Compile(shaderPath.string().c_str(), "main", "cs_6_5", defines);
-
     shc::Variable var = result->variables["bufferArray"];
 }
