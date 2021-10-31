@@ -13,6 +13,6 @@ int main(int argc, char** argv)
     defines.AddDefine("_BUFFER_SIZE", "42");
     defines.AddDefine("_RAY_TRACING", "");
 
-    auto result = compiler.Compile(shaderPath.string().c_str(), "main", "cs_6_5", defines);
+    auto result = compiler.Compile(shaderPath.string().c_str(), "main", "cs_6_5", defines, shc::Compiler::Target::HLSL);
     shc::Variable var = result->variables["bufferArray"];
 }

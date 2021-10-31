@@ -58,7 +58,12 @@ namespace shc
 	class Compiler
 	{
 	public:
-		
+		enum class Target
+		{
+			DXIL,
+			HLSL
+		};
+
 		class Result
 		{
 		public:
@@ -67,6 +72,7 @@ namespace shc
 			std::unordered_map<std::string, Variable> variables;
 			const void* data = nullptr;
 			size_t size = 0;
+			const char* code = nullptr;
 			unsigned int threadGroupSize[3] = {0, 0, 0};
 
 		private:
@@ -77,7 +83,7 @@ namespace shc
 		~Compiler();
 		
 		void AddSearchPath(const std::string& path);
-		std::shared_ptr<Result> Compile(const char* path, const char* entry, const char* profile, DefineList& defineList = DefineList());
+		std::shared_ptr<Result> Compile(const char* path, const char* entry, const char* profile, DefineList& defineList = DefineList(), Target target = Target::DXIL);
 
 	private:
 		std::vector<std::string> mSearchPaths;

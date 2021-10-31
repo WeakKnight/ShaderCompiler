@@ -20,12 +20,12 @@ void Compiler::AddSearchPath(const std::string& path)
     mSearchPaths.push_back(path);
 }
 
-std::shared_ptr<Compiler::Result> Compiler::Compile(const char* path, const char* entry, const char* profile, DefineList& defineList)
+std::shared_ptr<Compiler::Result> Compiler::Compile(const char* path, const char* entry, const char* profile, DefineList& defineList, Target target)
 {
 	SlangCompileRequest* request = spCreateCompileRequest(mpSession);
 	std::shared_ptr<Compiler::Result> result = std::make_shared<Compiler::Result>(request);
 
-	spSetCodeGenTarget(request, SLANG_DXIL);
+	spSetCodeGenTarget(request, target==Target::DXIL? SLANG_DXIL: SLANG_HLSL);
 	int translationUnitIndex = spAddTranslationUnit(request, SLANG_SOURCE_LANGUAGE_HLSL, "");
 	spAddTranslationUnitSourceFile(request, translationUnitIndex, path);
 
@@ -54,8 +54,15 @@ std::shared_ptr<Compiler::Result> Compiler::Compile(const char* path, const char
     }
     else
     {
-        result->data = spGetEntryPointCode(request, entryPointIndex, &result->size);
-
+        if (target == Target::DXIL)
+        {
+            result->data = spGetEntryPointCode(request, entryPointIndex, &result->size);
+        }
+        else
+        {
+            result->code = spGetEntryPointSource(request, entryPointIndex);
+            printf("%s\n", result->code);
+        }
         slang::ShaderReflection* shaderReflection = slang::ShaderReflection::get(request);
         unsigned parameterCount = shaderReflection->getParameterCount();
         for (unsigned pp = 0; pp < parameterCount; pp++)
