@@ -64,6 +64,12 @@ namespace shc
 			HLSL
 		};
 
+		enum class MatrixLayout
+		{
+			RowMajor,
+			ColumnMajor
+		};
+
 		class Result
 		{
 		public:
@@ -83,7 +89,7 @@ namespace shc
 		~Compiler();
 		
 		void AddSearchPath(const std::string& path);
-		std::shared_ptr<Result> Compile(const char* path, const char* entry, const char* profile, DefineList& defineList = DefineList(), Target target = Target::DXIL);
+		std::shared_ptr<Result> Compile(const char* path, const char* entry, const char* profile, DefineList& defineList = DefineList(), Target target = Target::DXIL, MatrixLayout matrixLayout = MatrixLayout::RowMajor);
 
 	private:
 		std::vector<std::string> mSearchPaths;

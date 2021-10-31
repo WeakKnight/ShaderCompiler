@@ -4,7 +4,7 @@
 int main(int argc, char** argv) 
 {
     std::filesystem::path exePath = argv[0];
-    std::filesystem::path shaderPath = exePath.parent_path() / "shaders/test.hlsl";
+    std::filesystem::path shaderPath = exePath.parent_path() / "shaders/rt_bindless.hlsl";
 
     auto compiler = shc::Compiler();
     compiler.AddSearchPath(shaderPath.parent_path().string());
@@ -14,5 +14,5 @@ int main(int argc, char** argv)
     defines.AddDefine("_RAY_TRACING", "");
 
     auto result = compiler.Compile(shaderPath.string().c_str(), "main", "cs_6_5", defines, shc::Compiler::Target::HLSL);
-    shc::Variable var = result->variables["bufferArray"];
+    int a = 1;
 }

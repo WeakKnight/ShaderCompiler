@@ -20,11 +20,11 @@ void Compiler::AddSearchPath(const std::string& path)
     mSearchPaths.push_back(path);
 }
 
-std::shared_ptr<Compiler::Result> Compiler::Compile(const char* path, const char* entry, const char* profile, DefineList& defineList, Target target)
+std::shared_ptr<Compiler::Result> Compiler::Compile(const char* path, const char* entry, const char* profile, DefineList& defineList, Target target, MatrixLayout matrixLayout)
 {
 	SlangCompileRequest* request = spCreateCompileRequest(mpSession);
 	std::shared_ptr<Compiler::Result> result = std::make_shared<Compiler::Result>(request);
-
+    spSetMatrixLayoutMode(request, matrixLayout == MatrixLayout::RowMajor? SLANG_MATRIX_LAYOUT_ROW_MAJOR: SLANG_MATRIX_LAYOUT_COLUMN_MAJOR);
 	spSetCodeGenTarget(request, target==Target::DXIL? SLANG_DXIL: SLANG_HLSL);
 	int translationUnitIndex = spAddTranslationUnit(request, SLANG_SOURCE_LANGUAGE_HLSL, "");
 	spAddTranslationUnitSourceFile(request, translationUnitIndex, path);
